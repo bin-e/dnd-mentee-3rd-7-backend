@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    command: python3 ./backend/manage.py runserver 0:8000
+    command: python3 /greene_api/manage.py runserver 0:8000
     volumes:
       - ./backend:/app
   web:  # web container
