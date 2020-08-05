@@ -11,7 +11,7 @@ services:
       - "8000:8000"
     command: python3 /greene_api/manage.py runserver 0:8000
     volumes:
-      - ./backend:/app
+      - ./backend:/greene_api
   web:  # web container
     # 프론트 앱 설정
     container_name: frontend # 컨테이너명
