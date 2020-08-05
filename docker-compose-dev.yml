@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  # django container
+  django:
+    container_name: backend # 컨테이너명
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    command: python3 /greene_api/manage.py runserver 0:8000
+    volumes:
+      - ./backend:/greene_api
