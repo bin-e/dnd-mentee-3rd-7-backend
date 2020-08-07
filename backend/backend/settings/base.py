@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'greene_api.apps.GreeneApiConfig',
+
+    # Third party modules
+    'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -136,7 +140,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-# AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'greene_api.User'
 
 JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
