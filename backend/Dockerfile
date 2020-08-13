@@ -10,6 +10,6 @@ WORKDIR /greene_api
 
 COPY . /greene_api/
 
-RUN pip install -r requirements.txt
+RUN mkdir /greene_api/staticfiles
 
-# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN pip install -r requirements.txt
