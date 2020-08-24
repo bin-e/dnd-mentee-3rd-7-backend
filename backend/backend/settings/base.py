@@ -45,6 +45,8 @@ INSTALLED_APPS = [
 
     # Third party modules
     'rest_framework',
+    'rest_framework_jwt',
+    'rest_framework_jwt.blacklist',
     'drf_yasg',
 ]
 
@@ -132,12 +134,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
 }
 
@@ -145,4 +147,20 @@ AUTH_USER_MODEL = 'greene_api.User'
 
 JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'DRF Token': {
+            'type': 'basic',
+            'name': 'Authorization',
+            'in': 'header'
+        },
+        'JWT Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'x-internal-id': 'bad',
+        }
+    }
 }
