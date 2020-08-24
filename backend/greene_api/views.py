@@ -1,7 +1,8 @@
+from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 
-from .serializers import UserCreateSerializer
-from rest_framework import generics, status
+from .models import Post
+from .serializers import UserCreateSerializer, PostSerializer
 
 
 class UserCreateAPIView(generics.CreateAPIView):
@@ -15,3 +16,8 @@ class UserCreateAPIView(generics.CreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response({'A user is created'}, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
