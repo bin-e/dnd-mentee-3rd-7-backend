@@ -20,4 +20,4 @@ class Post(models.Model):
         )
 
     def __str__(self):
-        return f"{user}, {title}"
+        return f"{self.title}"
