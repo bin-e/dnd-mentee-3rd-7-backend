@@ -14,7 +14,11 @@ docker-compose -f docker-compose.yml exec django python manage.py collectstatic 
 ```
 
 
-test
+### Add seed data
+
+```
+docker-compose -f docker-compose.yml exec django python manage.py seed --number {number}
+```
 
 
 
