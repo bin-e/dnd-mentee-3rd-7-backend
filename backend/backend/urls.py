@@ -10,9 +10,28 @@ schema_view = get_schema_view(
    openapi.Info(
       title="GreenE API",
       default_version='v1',
-      description="Test description",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="contact@snippets.local"),
+      description=
+      '''
+      # Open API 문서 페이지
+
+      ### 기본 사용법
+      1. 사용자 생성
+      **[POST] {host}/api/user/**
+
+      2. JWT Token 획득
+      **[POST] {host}/token/**
+
+      3. JWT Token 추가 
+      **swagger --> Authorrize 버튼 클릭 후 Bearer {Token} 등록**
+      **postman --> header에 Authorization: Bearer {Toekn} 등록**
+
+      ### 권한
+      1. Anonymous
+      2. Staff
+      3. Admin
+ 
+      ''',
+      contact=openapi.Contact(email="ljh9032a@naver.com"),
       license=openapi.License(name="BSD License"),
    ),
    public=True,
