@@ -29,16 +29,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    
+    # Apps 
     'greene_api.apps.GreeneApiConfig',
 
     # Third party modules
     'rest_framework',
     'rest_framework_jwt',
     'rest_framework_jwt.blacklist',
+    
     'drf_yasg',
-
     'django_seed',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 APPEND_SLASH = False
@@ -155,3 +158,6 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True

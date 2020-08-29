@@ -29,7 +29,7 @@ schema_view = get_schema_view(
       1. Anonymous
       2. Staff
       3. Admin
- 
+      
       ''',
       contact=openapi.Contact(email="ljh9032a@naver.com"),
       license=openapi.License(name="BSD License"),
