@@ -3,12 +3,6 @@ from .models import User, Post
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name', 'last_login', 'date_joined',)
-        read_only_fields = ('first_name', 'last_name', 'last_login', 'date_joined',)
-        extra_kwargs = {'password': {'write_only': True}}
-
     def create(self, validated_data):
         user = super(UserSerializer, self).create(validated_data)
         user.set_password(validated_data['password'])
@@ -23,8 +17,19 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("length of username more than six characters long")
         return username
 
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name', 'last_login', 'date_joined',)
+        read_only_fields = ('first_name', 'last_name', 'last_login', 'date_joined',)
+        extra_kwargs = {'password': {'write_only': True}}
+
 
 class PostSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    
+    def get_username(self, obj):
+        return obj.user.username
+
     class Meta:
         model = Post
-        fields = ['title', 'content', 'like', 'user', ]
+        fields = ('title', 'content', 'like', 'user', 'username',)
