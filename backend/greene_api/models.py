@@ -12,7 +12,10 @@ class Post(models.Model):
     title = models.CharField(max_length=150)
     content = models.TextField()
     like = models.IntegerField(default=0)
-    thumbnail = models.ImageField(upload_to='thumbnail_images')
+    thumbnail = models.ImageField(
+        default='thumbnail_images/default_image.jpeg',
+        upload_to='thumbnail_images/',
+        )
     date_created = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(

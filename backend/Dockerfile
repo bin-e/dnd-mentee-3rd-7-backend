@@ -12,4 +12,6 @@ COPY . /greene_api/
 
 RUN mkdir /greene_api/staticfiles
 
+RUN pip install --upgrade pip
+
 RUN pip install -r requirements.txt
