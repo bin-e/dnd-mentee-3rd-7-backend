@@ -13,6 +13,7 @@ services:
       - "8000"
     volumes:
       - static_volume:/greene_api/staticfiles/
+      - media_volume:/greene_api/mediafiles/
   web:  # web container
     # 프론트 앱 설정
     container_name: frontend # 컨테이너명
@@ -36,8 +37,10 @@ services:
       - ./frontend/public:/srv/www/static
       - ./default.conf:/etc/nginx/conf.d/default.conf
       - static_volume:/greene_api/staticfiles/
+      - media_volume:/greene_api/mediafiles/
     depends_on: 
       - web
 
 volumes:
   static_volume:
+  media_volume:
