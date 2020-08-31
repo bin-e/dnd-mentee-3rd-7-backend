@@ -1,8 +1,7 @@
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-
+from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 from .models import User, Post
 from .serializers import PostSerializer, UserSerializer
 
@@ -22,7 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    authentication_classes = (JSONWebTokenAuthentication,)
+    authentication_classes = (JWTTokenUserAuthentication,)
 
     def get_permissions(self):
         if self.action in ('create',):
@@ -45,7 +44,7 @@ class PostViewSet(viewsets.ModelViewSet):
     """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    authentication_classes = (JSONWebTokenAuthentication,)
+    authentication_classes = (JWTTokenUserAuthentication,)
     
     def get_permissions(self):
         if self.action in ('list', 'retrieve',):

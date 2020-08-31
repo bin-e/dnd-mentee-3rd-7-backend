@@ -1,8 +1,10 @@
 from django.urls import path
-from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 
-# from greene_api.views import UserCreateAPIView
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 from .views import UserViewSet ,PostViewSet
 
@@ -17,7 +19,6 @@ post_router.register(r'post', PostViewSet, basename='post')
 urlpatterns += user_router.urls
 urlpatterns += post_router.urls
 urlpatterns += [
-    path('token/', obtain_jwt_token),
-    path('token/refresh/', refresh_jwt_token),
-    path('token/verify/', verify_jwt_token),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
