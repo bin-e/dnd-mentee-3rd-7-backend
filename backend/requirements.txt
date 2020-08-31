@@ -10,6 +10,7 @@ django-cors-headers==3.5.0
 django-seed==0.2.2
 djangorestframework==3.11.0
 djangorestframework-jwt==1.11.0
+djangorestframework-simplejwt==4.4.0
 drf-jwt==1.17.0
 drf-yasg==1.17.1
 Faker==4.1.2
