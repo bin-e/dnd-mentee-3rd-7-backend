@@ -28,3 +28,10 @@ class Post(models.Model):
 
 class Hashtag(models.Model):
     name = models.CharField(max_length=150)
+
+
+class History(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    query = models.CharField(max_length=150)
+    
+    

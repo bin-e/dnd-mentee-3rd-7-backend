@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Post, Hashtag
+from .models import User, Post, Hashtag, History
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,3 +60,7 @@ class PostSerializer(serializers.ModelSerializer):
          'user', 'username', 'hashtags',)
 
 
+class HistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = History
+        fields = '__all__'

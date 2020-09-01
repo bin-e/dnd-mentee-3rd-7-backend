@@ -2,8 +2,11 @@ from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import User, Post
-from .serializers import PostSerializer, UserSerializer
+from .models import User, Post, History
+from .serializers import PostSerializer, UserSerializer, HistorySerializer
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -46,6 +49,27 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     authentication_classes = (JWTAuthentication,)
     
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        query = self.request.query_params.get('query', None)
+        if query is not None:
+            queryset = queryset.filter(title__icontains=query)
+        return queryset
+    
+    param_query_hint = openapi.Parameter(
+        'query',
+        openapi.IN_QUERY,
+        description='A sting that be filtered on list of posts',
+        type=openapi.TYPE_STRING
+    )
+    
+    @swagger_auto_schema(manual_parameters=[param_query_hint])
+    def list(self, request, *args, **kwargs):
+        query = self.request.query_params.get('query', None)
+        if query is not None and request.user is not None:
+            History.objects.create(user=request.user, query=query)
+        return super().list(request, *args, **kwargs)
+    
     def get_permissions(self):
         if self.action in ('list', 'retrieve',):
              permission_classes = (AllowAny,)
@@ -54,3 +78,18 @@ class PostViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = (IsAdminUser,)  
         return [permission() for permission in permission_classes]
+
+
+class HistoryReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = History.objects.all()
+    serializer_class = HistorySerializer
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    pagination_class = None
+    
+    def get_queryset(self):
+        bound = 3
+        queryset = History.objects.all()
+        queryset = queryset.filter(user=self.request.user).order_by('-id')[:bound]
+        return queryset
+    
