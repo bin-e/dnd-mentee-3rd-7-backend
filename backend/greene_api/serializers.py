@@ -32,6 +32,8 @@ class HashtagSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
+    # refer https://stackoverflow.com/questions/61537923/update-manytomany-relationship-in-django-rest-framework
+    # have to write a update and create_or_update for put method
     username = serializers.SerializerMethodField()
     hashtags = HashtagSerializer(many=True)
 
@@ -42,8 +44,6 @@ class PostSerializer(serializers.ModelSerializer):
         hashtag_ids = []
         for hashtag in hashtags:
             # find hashtags using a hashtag name
-            # refer https://stackoverflow.com/questions/61537923/update-manytomany-relationship-in-django-rest-framework
-            # have to write a update and create_or_update for put method
             hashtag_instance, created = Hashtag.objects.get_or_create(name=hashtag.get('name'), defaults=hashtag)
             hashtag_ids.append(hashtag_instance.pk)
         return hashtag_ids
