@@ -14,7 +14,7 @@ user_router = DefaultRouter()
 post_router = DefaultRouter()
 history_router = DefaultRouter()
 user_router.register(r'user', UserViewSet, basename='user')
-post_router.register(r'post', PostViewSet, basename='post')
+post_router.register(r'tip', PostViewSet, basename='tip')
 history_router.register(r'history', HistoryReadOnlyModelViewSet, basename='history')
 
 urlpatterns += user_router.urls

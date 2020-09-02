@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import User, Post, History
-from .serializers import PostSerializer, UserSerializer, HistorySerializer
+from .serializers import UserSerializer, PostSerializer, HistorySerializer
+from rest_framework.decorators import action
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -17,8 +18,7 @@ class UserViewSet(viewsets.ModelViewSet):
     - email: 유저의 이메일
     - username: 유저의 유저네임
     - password: 유저의 패스워드
-    - first_name: 유저의 성
-    - last_name: 유저의 이름
+    - name: 유저의 이름
     - last_login: 최근 로그인 날짜
     - date_joined: 회원가입 날짜
     """
@@ -35,6 +35,13 @@ class UserViewSet(viewsets.ModelViewSet):
             permission_classes = (IsAdminUser,)
         return [permission() for permission in permission_classes]
 
+    @action(detail=True, methods=['GET'], permission_classes=(IsAuthenticated,))
+    def history_of_user(self, request, pk=None):
+        user = self.get_object()
+        histories = user.history_set.all()
+        serializer = HistorySerializer(histories, many=True)
+        return Response(serializer.data)
+        
 
 class PostViewSet(viewsets.ModelViewSet):
     """
@@ -74,7 +81,7 @@ class PostViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retrieve',):
              permission_classes = (AllowAny,)
         elif self.action in ('create', 'partial_update', 'destroy',):
-            permission_classes = (IsAuthenticated,)
+            permission_classes = [IsAuthenticated,]
         else:
             permission_classes = (IsAdminUser,)  
         return [permission() for permission in permission_classes]
@@ -85,11 +92,3 @@ class HistoryReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = HistorySerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
-    pagination_class = None
-    
-    def get_queryset(self):
-        bound = 3
-        queryset = History.objects.all()
-        queryset = queryset.filter(user=self.request.user).order_by('-id')[:bound]
-        return queryset
-    

@@ -3,7 +3,7 @@ from .models import User, Post, Hashtag
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'is_staff', 'is_superuser', )
+    list_display = ('id', 'name', 'username', 'email', 'is_staff', 'is_superuser',)
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'like', 'date_created', 'user',)
