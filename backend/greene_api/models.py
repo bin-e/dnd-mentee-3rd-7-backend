@@ -2,14 +2,31 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
+from django.contrib.auth.validators import UnicodeUsernameValidator
+
 
 class User(AbstractUser):
-    name = models.CharField(max_length=150)
+    username_validator = UnicodeUsernameValidator()
+    
+    email = models.EmailField(
+        verbose_name='email address',
+        max_length=255,
+        unique=True,
+        help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.',
+        validators=[username_validator],
+        error_messages={
+            'unique': 'A user with that username already exists.',
+        },
+    )
+    name = models.CharField(max_length=150, blank=True)
     first_name = None
     last_name = None
-
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    
     class Meta:
-        db_table = "user"
+        db_table = 'user'
 
 
 class Post(models.Model):
@@ -37,5 +54,5 @@ class Hashtag(models.Model):
 class History(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     query = models.CharField(max_length=150)
-    
+    date_created = models.DateTimeField(default=timezone.now)
     
