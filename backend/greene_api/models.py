@@ -4,6 +4,10 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
+    name = models.CharField(max_length=150)
+    first_name = None
+    last_name = None
+
     class Meta:
         db_table = "user"
 

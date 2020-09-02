@@ -19,9 +19,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name', 
+        fields = ('id', 'email', 'name', 'username', 'password',
         'last_login', 'date_joined',)
-        read_only_fields = ('first_name', 'last_name', 'last_login', 'date_joined',)
+        read_only_fields = ('name', 'last_login', 'date_joined',)
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -56,7 +56,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'like', 'thumbnail', 'thumbnail',
+        fields = ('id', 'title', 'content', 'like', 'thumbnail',
          'user', 'username', 'hashtags',)
 
 

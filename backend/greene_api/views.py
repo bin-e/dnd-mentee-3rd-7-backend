@@ -17,8 +17,7 @@ class UserViewSet(viewsets.ModelViewSet):
     - email: 유저의 이메일
     - username: 유저의 유저네임
     - password: 유저의 패스워드
-    - first_name: 유저의 성
-    - last_name: 유저의 이름
+    - name: 유저의 이름
     - last_login: 최근 로그인 날짜
     - date_joined: 회원가입 날짜
     """
@@ -81,10 +80,16 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class HistoryReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    검색 기록 Read Only API
+
+    - user: 검색했던 사용자 (Anonymous user는 저장 안됨)
+    - query: 검색 쿼리
+    """
     queryset = History.objects.all()
     serializer_class = HistorySerializer
     authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     pagination_class = None
     
     def get_queryset(self):
