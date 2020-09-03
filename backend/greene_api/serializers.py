@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Post, Hashtag, History
+from .models import User, Post, Comment, Hashtag, History
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email': {'write_only': True},
             }
         
-    
+
 class HashtagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hashtag
@@ -61,6 +61,14 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'content', 'like', 'thumbnail',
          'user', 'username', 'hashtags', 'date_created', 'date_modified',)
         read_only_fields = ('date_created', 'date_modified',)
+
+
+class CommentSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        read_only_fields = ('date_created', 'date_modified',)
+
 
 class HistorySerializer(serializers.ModelSerializer):
     class Meta:

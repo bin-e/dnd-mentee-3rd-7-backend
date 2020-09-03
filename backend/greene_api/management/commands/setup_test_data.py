@@ -8,15 +8,17 @@ from ...models import User, Post, Hashtag, History
 from ...factories import (
     UserFactory,
     PostFactory,
+    CommentFactory,
     HashtagFactory,
     HistoryFactory
 )
 
-NUM_USERS = 30
-NUM_POSTS = 100
-NUM_HASHTAGES = 12
+NUM_USERS = 100
+NUM_POSTS = 200
+NUM_COMMENTS = 300
+NUM_HASHTAGES = 30
 USERS_PER_HASHTAG = 3
-NUM_HISTORYS = 50
+NUM_HISTORYS = 500
 
 class Command(BaseCommand):
     help = "Generates test data"
@@ -49,13 +51,21 @@ class Command(BaseCommand):
         for _ in range(NUM_HASHTAGES):
             hashtag = HashtagFactory()
             hashtags.append(hashtag)
-            
-        # Create posts associated with user
+        
+        posts = []
+        # Create posts that is associated with user
         for _ in range(NUM_POSTS):
             user = random.choice(people)
             post = PostFactory(user=user)
+            posts.append(post)
             htgs = random.choices(hashtags, k=USERS_PER_HASHTAG)
             post.hashtags.add(*htgs)
+        
+        # Create comments that is associated with user and post
+        for _ in range(NUM_COMMENTS):
+            user = random.choice(people)
+            post = random.choice(posts)
+            comment = CommentFactory(user=user, post=post)
             
         # Create historys
         for _ in range(NUM_HISTORYS):
