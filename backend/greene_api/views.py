@@ -39,7 +39,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def history_of_user(self, request, pk=None):
         user = self.get_object()
         histories = user.history_set.all()
-        serializer = HistorySerializer(histories, many=True)
+        top_3_histories = histories.order_by('-id')[:3]
+        serializer = HistorySerializer(top_3_histories, many=True)
         return Response(serializer.data)
         
 
