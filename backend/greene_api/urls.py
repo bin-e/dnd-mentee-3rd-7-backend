@@ -6,19 +6,22 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from .views import UserViewSet ,PostViewSet, HistoryDestroyModelViewSet
+from .views import UserViewSet ,PostViewSet, CommentViewSet, HistoryDestroyModelViewSet
 
 urlpatterns = []
 
 user_router = DefaultRouter()
 post_router = DefaultRouter()
 history_router = DefaultRouter()
+comment_router = DefaultRouter()
 user_router.register(r'user', UserViewSet, basename='user')
 post_router.register(r'tip', PostViewSet, basename='tip')
+comment_router.register(r'comment', CommentViewSet, basename='comment')
 history_router.register(r'history', HistoryDestroyModelViewSet, basename='history')
 
 urlpatterns += user_router.urls
 urlpatterns += post_router.urls
+urlpatterns += comment_router.urls
 urlpatterns += history_router.urls
 urlpatterns += [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

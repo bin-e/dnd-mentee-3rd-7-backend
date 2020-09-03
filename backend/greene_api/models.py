@@ -47,6 +47,14 @@ class Post(models.Model):
         return f"{self.title}"
 
 
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    content = models.CharField(max_length=150)
+    date_created = models.DateTimeField(default=timezone.now)
+    date_modified = models.DateTimeField(default=timezone.now)
+
+
 class Hashtag(models.Model):
     name = models.CharField(max_length=150)
 

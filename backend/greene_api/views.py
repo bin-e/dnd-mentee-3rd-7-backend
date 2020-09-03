@@ -6,8 +6,8 @@ from rest_framework.decorators import action
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from .models import User, Post, History
-from .serializers import UserSerializer, PostSerializer, HistorySerializer
+from .models import User, Post, Comment, History
+from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -82,9 +82,23 @@ class PostViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retrieve',):
              permission_classes = (AllowAny,)
         elif self.action in ('create', 'partial_update', 'destroy',):
-            permission_classes = [IsAuthenticated,]
+            permission_classes = (IsAuthenticated,)
         else:
             permission_classes = (IsAdminUser,)  
+        return [permission() for permission in permission_classes]
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    authentication_classes = (JWTAuthentication,)
+
+    def get_permissions(self):
+        if self.action in ('retrieve',):
+             permission_classes = (AllowAny,)
+        elif self.action in ('create', 'partial_update', 'destroy',):
+            permission_classes = (IsAuthenticated,)
+        else:
+            permission_classes = (IsAdminUser,) 
         return [permission() for permission in permission_classes]
 
 
