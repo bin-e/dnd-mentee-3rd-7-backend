@@ -29,13 +29,13 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ('create',):
              permission_classes = (AllowAny,)
-        elif self.action in ('update', 'partial_update', 'destroy',):
+        elif self.action in ('update', 'partial_update', 'destroy', 'history_of_user',):
             permission_classes = (IsAuthenticated,)
         else:
             permission_classes = (IsAdminUser,)
         return [permission() for permission in permission_classes]
 
-    @action(detail=True, methods=['GET'], permission_classes=(IsAuthenticated,))
+    @action(detail=True, methods=['GET'])
     def history_of_user(self, request, pk=None):
         user = self.get_object()
         histories = user.history_set.all()
