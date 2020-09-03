@@ -1,3 +1,5 @@
+import random 
+
 from rest_framework import viewsets, generics, status, mixins
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
@@ -6,8 +8,8 @@ from rest_framework.decorators import action
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from .models import User, Post, Comment, History
-from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer
+from .models import User, Post, Comment, History, Hashtag
+from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -29,14 +31,14 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ('create',):
              permission_classes = (AllowAny,)
-        elif self.action in ('update', 'partial_update', 'destroy', 'history_of_user',):
+        elif self.action in ('update', 'partial_update', 'destroy', 'histories_of_user',):
             permission_classes = (IsAuthenticated,)
         else:
             permission_classes = (IsAdminUser,)
         return [permission() for permission in permission_classes]
 
     @action(detail=True, methods=['GET'])
-    def history_of_user(self, request, pk=None):
+    def histories_of_user(self, request, pk=None):
         user = self.get_object()
         histories = user.history_set.all()
         top_3_histories = histories.order_by('-id')[:3]
@@ -107,3 +109,18 @@ class HistoryDestroyModelViewSet(mixins.DestroyModelMixin, viewsets.GenericViewS
     serializer_class = HistorySerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
+
+
+class HashtagGenericViewSet(viewsets.GenericViewSet):
+    queryset = Hashtag.objects.all()
+    serializer_class = HashtagSerializer
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (AllowAny,)
+    
+    @action(detail=False, methods=['GET'])
+    def recommend_hashtags(self, request, pk=None):
+        queryset = self.filter_queryset(self.get_queryset())
+        queryset_k = random.choices(queryset, k=3)
+        serializer = self.get_serializer(queryset_k, many=True)
+        return Response(serializer.data)
+    
