@@ -1,9 +1,10 @@
 import random 
 
-from .models import User, Post, Comment, Hashtag, History
-
 import factory
 from factory.django import DjangoModelFactory
+
+from .models import User, Post, Comment, Hashtag, History
+
 
 class UserFactory(DjangoModelFactory):
     class Meta:

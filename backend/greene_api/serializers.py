@@ -37,11 +37,15 @@ class PostSerializer(serializers.ModelSerializer):
     # refer https://stackoverflow.com/questions/61537923/update-manytomany-relationship-in-django-rest-framework
     # have to write a update and create_or_update for put method
     username = serializers.SerializerMethodField()
+    number_comments = serializers.SerializerMethodField()
     hashtags = HashtagSerializer(many=True)
-
+    
     def get_username(self, obj):
         return obj.user.username
 
+    def get_number_comments(self, obj):
+        return Comment.objects.filter(post=obj).count()
+    
     def get_or_create_hashtags(self, hashtags):
         hashtag_ids = []
         for hashtag in hashtags:
@@ -59,7 +63,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'content', 'like', 'thumbnail',
-         'user', 'username', 'hashtags', 'date_created', 'date_modified',)
+         'user', 'username', 'hashtags', 'number_comments', 'date_created', 'date_modified',)
         read_only_fields = ('date_created', 'date_modified',)
 
 
