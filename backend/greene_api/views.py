@@ -1,13 +1,13 @@
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets, generics, status, mixins
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import User, Post, History
-from .serializers import UserSerializer, PostSerializer, HistorySerializer
 from rest_framework.decorators import action
-
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
+from .models import User, Post, History
+from .serializers import UserSerializer, PostSerializer, HistorySerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -88,7 +88,7 @@ class PostViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
-class HistoryReadOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
+class HistoryDestroyModelViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
     authentication_classes = (JWTAuthentication,)

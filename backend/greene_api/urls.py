@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from .views import UserViewSet ,PostViewSet, HistoryReadOnlyModelViewSet
+from .views import UserViewSet ,PostViewSet, HistoryDestroyModelViewSet
 
 urlpatterns = []
 
@@ -15,7 +15,7 @@ post_router = DefaultRouter()
 history_router = DefaultRouter()
 user_router.register(r'user', UserViewSet, basename='user')
 post_router.register(r'tip', PostViewSet, basename='tip')
-history_router.register(r'history', HistoryReadOnlyModelViewSet, basename='history')
+history_router.register(r'history', HistoryDestroyModelViewSet, basename='history')
 
 urlpatterns += user_router.urls
 urlpatterns += post_router.urls
