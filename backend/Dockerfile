@@ -15,3 +15,5 @@ RUN mkdir /greene_api/staticfiles
 RUN pip install --upgrade pip
 
 RUN pip install -r requirements.txt
+
+RUN ["chmod", "+x", "/greene_api/docker-entrypoint.sh"]
