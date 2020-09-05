@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Post, Comment, Hashtag, History
+from .models import User, Post, Comment, Hashtag, History, Like
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
             'email': {'write_only': True},
-            }
+        }
         
 
 class HashtagSerializer(serializers.ModelSerializer):
@@ -50,7 +50,8 @@ class PostSerializer(serializers.ModelSerializer):
         hashtag_ids = []
         for hashtag in hashtags:
             # find hashtags using a hashtag name
-            hashtag_instance, created = Hashtag.objects.get_or_create(name=hashtag.get('name'), defaults=hashtag)
+            hashtag_instance, created = Hashtag.objects.get_or_create( \
+                name=hashtag.get('name'), defaults=hashtag)
             hashtag_ids.append(hashtag_instance.pk)
         return hashtag_ids
 
@@ -62,7 +63,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'like', 'thumbnail',
+        fields = ('id', 'title', 'content', 'thumbnail',
          'user', 'username', 'hashtags', 'number_comments', 'date_created', 'date_modified',)
         read_only_fields = ('date_created', 'date_modified',)
 
@@ -78,3 +79,19 @@ class HistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = History
         fields = '__all__'
+
+
+class LikeSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        like_instance, created = Like.objects.get_or_create(user=validated_data.get('user'), \
+            post=validated_data.get('post'), defaults=validated_data)
+        like_instance.number += 1
+        like_instance.save()
+        return like_instance
+    
+    class Meta:
+        model = Like
+        fields = ('id', 'user', 'post', 'number', 'date_created', 'date_modified',)
+        read_only_fields = ('number', 'date_created', 'date_modified',)
+

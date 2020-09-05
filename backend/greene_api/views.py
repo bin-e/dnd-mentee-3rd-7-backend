@@ -7,8 +7,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
 from drf_yasg.utils import swagger_auto_schema
 
-from .models import User, Post, Comment, History, Hashtag
-from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer
+from .models import User, Post, Comment, History, Hashtag, Like
+from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer, LikeSerializer
 from .swagger_decorators import param_query_hint
 
 
@@ -77,6 +77,8 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
+
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
@@ -92,7 +94,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     
-class HistoryDestroyModelViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class HistoryDestroyViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
     authentication_classes = (JWTAuthentication,)
@@ -112,4 +114,10 @@ class HashtagGenericViewSet(viewsets.GenericViewSet):
         queryset_k = random.choices(queryset, k=3)
         serializer = self.get_serializer(queryset_k, many=True)
         return Response(serializer.data)
-    
+
+
+class LikeCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated,)

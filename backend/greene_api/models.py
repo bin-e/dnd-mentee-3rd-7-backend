@@ -33,7 +33,6 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=150)
     content = models.TextField()
-    like = models.IntegerField(default=0)
     thumbnail = models.ImageField(
         default='thumbnail_images/default_image.jpeg',
         upload_to='thumbnail_images/'
@@ -64,3 +63,10 @@ class History(models.Model):
     query = models.CharField(max_length=150)
     date_created = models.DateTimeField(default=timezone.now)
     
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    number = models.IntegerField(default=0)
+    date_created = models.DateTimeField(default=timezone.now)
+    date_modified = models.DateTimeField(default=timezone.now)
