@@ -4,13 +4,14 @@ import factory
 from django.db import transaction
 from django.core.management.base import BaseCommand
 
-from ...models import User, Post, Hashtag, History
+from ...models import User, Post, Hashtag, History, Like
 from ...factories import (
     UserFactory,
     PostFactory,
     CommentFactory,
     HashtagFactory,
-    HistoryFactory
+    HistoryFactory,
+    LikeFactory,
 )
 
 NUM_USERS = 100
@@ -19,6 +20,7 @@ NUM_COMMENTS = 300
 NUM_HASHTAGES = 30
 USERS_PER_HASHTAG = 3
 NUM_HISTORYS = 500
+NUM_LIKES = 30
 
 class Command(BaseCommand):
     help = "Generates test data"
@@ -72,4 +74,9 @@ class Command(BaseCommand):
             user = random.choice(people)
             history = HistoryFactory(user=user)
             
+        # Create Likes 
+        for _ in range(NUM_LIKES):
+            user = random.choice(people)
+            post = random.choice(posts)
+            like = LikeFactory(user=user, post=post, number=random.randint(1, 5))
 

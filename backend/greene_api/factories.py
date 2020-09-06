@@ -3,7 +3,7 @@ import random
 import factory
 from factory.django import DjangoModelFactory
 
-from .models import User, Post, Comment, Hashtag, History
+from .models import User, Post, Comment, Hashtag, History, Like
 
 
 class UserFactory(DjangoModelFactory):
@@ -33,8 +33,7 @@ class PostFactory(DjangoModelFactory):
         nb_words=20,
         variable_nb_words=True
     )
-    like = random.choice([0, 1, 2, 3, 4, 5])
-
+    
 
 class CommentFactory(DjangoModelFactory):
     class Meta:
@@ -59,4 +58,10 @@ class HistoryFactory(DjangoModelFactory):
         model = History
         
     query = factory.Faker('word')
+    
+
+
+class LikeFactory(DjangoModelFactory):
+    class Meta:
+        model = Like
     
