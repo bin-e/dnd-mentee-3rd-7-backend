@@ -1,5 +1,6 @@
 import random 
 
+from django.db.models import Subquery
 from rest_framework import viewsets, generics, status, mixins
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
@@ -19,25 +20,33 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ('create',):
-             permission_classes = (AllowAny,)
-        elif self.action in ('update', 'partial_update', 'destroy', 'histories_of_user',):
+            permission_classes = (AllowAny,)
+        elif self.action in ('update', 'partial_update', 'destroy', 'histories', 'posts', 'liked-posts'):
             permission_classes = (IsAuthenticated,)
         else:
             permission_classes = (IsAdminUser,)
         return [permission() for permission in permission_classes]
 
-    @action(detail=True, methods=['GET'])
-    def histories_of_user(self, request, pk=None):
+    @action(methods=['GET'], detail=True, url_path='histories')
+    def histories(self, request, pk=None):
         user = self.get_object()
         histories = user.history_set.all()
         top_3_histories = histories.order_by('-id')[:3]
         serializer = HistorySerializer(top_3_histories, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['GET'])
-    def posts_of_user(self, request, pk=None):
+    @action(methods=['GET'], detail=True, url_path='posts')
+    def posts(self, request, pk=None):
         user = self.get_object()
         Posts = user.post_set.all()
+        serializer = PostSerializer(Posts, many=True)
+        return Response(serializer.data)
+    
+    @action(methods=['GET'], detail=True, url_path='liked-posts')
+    def liked_posts(self, request, pk=None):
+        user = self.get_object()
+        likes = Like.objects.filter(user=user)
+        Posts = Post.objects.filter(id__in=Subquery(likes.values('post')))
         serializer = PostSerializer(Posts, many=True)
         return Response(serializer.data)
         
@@ -62,16 +71,16 @@ class PostViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
     
     def get_permissions(self):
-        if self.action in ('list', 'retrieve', 'comments_of_post'):
-             permission_classes = (AllowAny,)
+        if self.action in ('list', 'retrieve', 'comments'):
+            permission_classes = (AllowAny,)
         elif self.action in ('create', 'partial_update', 'destroy',):
             permission_classes = (IsAuthenticated,)
         else:
             permission_classes = (IsAdminUser,)  
         return [permission() for permission in permission_classes]
 
-    @action(detail=True, methods=['GET'])
-    def comments_of_post(self, request, pk=None):
+    @action(methods=['GET'], detail=True, url_path='comments')
+    def comments(self, request, pk=None):
         post = self.get_object()
         comments = post.comment_set.all()
         serializer = CommentSerializer(comments, many=True)
@@ -86,7 +95,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ('retrieve'):
-             permission_classes = (AllowAny,)
+            permission_classes = (AllowAny,)
         elif self.action in ('create', 'partial_update', 'destroy',):
             permission_classes = (IsAuthenticated,)
         else:
@@ -108,7 +117,7 @@ class HashtagGenericViewSet(viewsets.GenericViewSet):
     permission_classes = (AllowAny,)
     pagination_class = None
     
-    @action(detail=False, methods=['GET'])
+    @action(methods=['GET'], detail=False, url_path='recommend-hashtags')
     def recommend_hashtags(self, request):
         queryset = self.filter_queryset(self.get_queryset())
         queryset_k = random.choices(queryset, k=3)

@@ -1,3 +1,5 @@
+from django.db.models import Sum
+
 from rest_framework import serializers
 from .models import User, Post, Comment, Hashtag, History, Like
 
@@ -37,14 +39,21 @@ class PostSerializer(serializers.ModelSerializer):
     # refer https://stackoverflow.com/questions/61537923/update-manytomany-relationship-in-django-rest-framework
     # have to write a update and create_or_update for put method
     username = serializers.SerializerMethodField()
-    number_comments = serializers.SerializerMethodField()
+    number_of_comments = serializers.SerializerMethodField()
+    number_of_likes = serializers.SerializerMethodField()
     hashtags = HashtagSerializer(many=True)
     
     def get_username(self, obj):
         return obj.user.username
 
-    def get_number_comments(self, obj):
+    def get_number_of_comments(self, obj):
         return Comment.objects.filter(post=obj).count()
+    
+    def get_number_of_likes(self, obj):
+        number_of_likes = Like.objects.filter(post=obj).aggregate(Sum('number'))
+        return number_of_likes.get('number__sum') \
+            if number_of_likes.get('number__sum') is not None \
+                else 0
     
     def get_or_create_hashtags(self, hashtags):
         hashtag_ids = []
@@ -63,8 +72,9 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'thumbnail',
-         'user', 'username', 'hashtags', 'number_comments', 'date_created', 'date_modified',)
+        fields = ('id', 'title', 'content', 'thumbnail', \
+            'user', 'username', 'hashtags', 'number_of_comments', \
+                'number_of_likes', 'date_created', 'date_modified',)
         read_only_fields = ('date_created', 'date_modified',)
 
 
