@@ -6,10 +6,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
+from rest_framework_simplejwt.views import TokenObtainPairView
 from drf_yasg.utils import swagger_auto_schema
 
 from .models import User, Post, Comment, History, Hashtag, Like
-from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer, LikeSerializer
+from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer, LikeSerializer, MyTokenObtainPairSerializer
 from .swagger_decorators import param_query_hint
 
 
@@ -63,13 +64,6 @@ class PostViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(title__icontains=query)
         return queryset
     
-    @swagger_auto_schema(manual_parameters=[param_query_hint])
-    def list(self, request, *args, **kwargs):
-        query = self.request.query_params.get('query', None)
-        if query is not None and request.user is not None:
-            History.objects.create(user=request.user, query=query)
-        return super().list(request, *args, **kwargs)
-    
     def get_permissions(self):
         if self.action in ('list', 'retrieve', 'comments'):
             permission_classes = (AllowAny,)
@@ -78,7 +72,14 @@ class PostViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = (IsAdminUser,)  
         return [permission() for permission in permission_classes]
-
+    
+    @swagger_auto_schema(manual_parameters=[param_query_hint])
+    def list(self, request, *args, **kwargs):
+        query = self.request.query_params.get('query', None)
+        if query is not None and request.user is not None:
+            History.objects.create(user=request.user, query=query)
+        return super().list(request, *args, **kwargs)
+    
     @action(methods=['GET'], detail=True, url_path='comments')
     def comments(self, request, pk=None):
         post = self.get_object()
@@ -103,11 +104,24 @@ class CommentViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     
-class HistoryDestroyViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class HistoryDestroyViewSet(viewsets.GenericViewSet):
     queryset = History.objects.all()
     serializer_class = HistorySerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
+    
+    def destroy(self, request, *args, **kwargs):
+        history = self.get_object()
+        user = User.objects.get(id=history.user.id)
+        self.perform_destroy(history)
+        
+        histories = user.history_set.all()
+        top_3_histories = histories.order_by('-id')[:3]
+        serializer = HistorySerializer(top_3_histories, many=True)
+        return Response(serializer.data)
+
+    def perform_destroy(self, instance):
+        instance.delete()
 
 
 class HashtagGenericViewSet(viewsets.GenericViewSet):
@@ -119,7 +133,7 @@ class HashtagGenericViewSet(viewsets.GenericViewSet):
     
     @action(methods=['GET'], detail=False, url_path='recommend-hashtags')
     def recommend_hashtags(self, request):
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.get_queryset()
         queryset_k = random.choices(queryset, k=3)
         serializer = self.get_serializer(queryset_k, many=True)
         return Response(serializer.data)
@@ -130,3 +144,7 @@ class LikeCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = LikeSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
+    
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Post, Comment, Hashtag, Like
+from .models import User, Post, Comment, Hashtag, Like, History
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -20,9 +20,14 @@ class HashtagAdmin(admin.ModelAdmin):
 
 class LikeAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'post', 'number',)
+    
+
+class HistoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'query')
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(Hashtag, HashtagAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Like, LikeAdmin)
+admin.site.register(History, HistoryAdmin)

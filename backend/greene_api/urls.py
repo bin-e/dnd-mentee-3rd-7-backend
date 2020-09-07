@@ -2,12 +2,18 @@ from django.urls import path
 
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
 
-from .views import UserViewSet ,PostViewSet, CommentViewSet, \
-     HistoryDestroyViewSet, HashtagGenericViewSet, LikeCreateViewSet
+from .views import (
+    UserViewSet,
+    PostViewSet, 
+    CommentViewSet,
+    HistoryDestroyViewSet, 
+    HashtagGenericViewSet, 
+    LikeCreateViewSet,
+    MyTokenObtainPairView,
+)
 
 urlpatterns = []
 
@@ -33,6 +39,6 @@ urlpatterns += hashtag_router.urls
 urlpatterns += like_router.urls
 
 urlpatterns += [
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

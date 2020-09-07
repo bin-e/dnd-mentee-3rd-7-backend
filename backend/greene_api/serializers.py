@@ -1,6 +1,8 @@
 from django.db.models import Sum
 
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from .models import User, Post, Comment, Hashtag, History, Like
 
 
@@ -105,3 +107,10 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'post', 'number', 'date_created', 'date_modified',)
         read_only_fields = ('number', 'date_created', 'date_modified',)
 
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['username'] = user.username
+        return token
