@@ -17,4 +17,4 @@ python manage.py setup_test_data
 
 # Start server
 echo "Starting server"
-gunicorn backend.wsgi --bind 0.0.0.0:8000
+gunicorn backend.wsgi --bind 0.0.0.0:8000 --access-logfile access.log --error-logfile error.log
