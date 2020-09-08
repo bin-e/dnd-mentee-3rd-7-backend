@@ -80,9 +80,11 @@ class Command(BaseCommand):
             post = random.choice(posts)
             like = LikeFactory(user=user, post=post, number=random.randint(1, 5))
 
-        # Create superuser's posts
+        # Create superuser's posts and likes
         for _ in range(5):
             post = PostFactory(user=superuser)
-            posts.append(post)
             htgs = random.choices(hashtags, k=USERS_PER_HASHTAG)
             post.hashtags.add(*htgs)
+
+            post = random.choice(posts)
+            like = LikeFactory(user=superuser, post=post, number=random.randint(1, 5))
