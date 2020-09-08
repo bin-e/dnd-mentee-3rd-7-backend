@@ -61,7 +61,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Post.objects.all()
         query = self.request.query_params.get('query', '')
-        if not query:
+        if query:
             queryset = queryset.filter(title__icontains=query)
         return queryset
     
@@ -77,7 +77,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(manual_parameters=[param_query_hint])
     def list(self, request, *args, **kwargs):
         query = self.request.query_params.get('query', '')
-        if not query and not request.user.is_anonymous:
+        if query and not request.user.is_anonymous:
             History.objects.create(user=request.user, query=query)
         return super().list(request, *args, **kwargs)
     
