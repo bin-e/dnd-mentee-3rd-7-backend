@@ -72,6 +72,6 @@ class Like(models.Model):
 class File(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.ImageField(
-        default='thumbnail_images/default_image.jpeg',
-        upload_to='thumbnail_images/'
+        default='images/default_image.jpeg',
+        upload_to='images/'
     )

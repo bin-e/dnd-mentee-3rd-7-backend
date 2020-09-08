@@ -155,4 +155,4 @@ class FileCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = FileSerializer
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAuthenticated,)
-    parser_class = (FileUploadParser,)
+    parser_class = (MultiPartParser,)
