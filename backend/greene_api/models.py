@@ -33,10 +33,7 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=150)
     content = models.TextField()
-    thumbnail = models.ImageField(
-        default='thumbnail_images/default_image.jpeg',
-        upload_to='thumbnail_images/'
-        )
+    thumbnail = models.URLField()
     hashtags = models.ManyToManyField('hashtag')
     date_created = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(default=timezone.now)
@@ -70,3 +67,11 @@ class Like(models.Model):
     number = models.IntegerField(default=0)
     date_created = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(default=timezone.now)
+
+
+class File(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.ImageField(
+        default='thumbnail_images/default_image.jpeg',
+        upload_to='thumbnail_images/'
+    )

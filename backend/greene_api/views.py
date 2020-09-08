@@ -3,14 +3,15 @@ import random
 from django.db.models import Subquery
 from rest_framework import viewsets, generics, status, mixins
 from rest_framework.response import Response
+from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
 from rest_framework_simplejwt.views import TokenObtainPairView
 from drf_yasg.utils import swagger_auto_schema
 
-from .models import User, Post, Comment, History, Hashtag, Like
-from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer, LikeSerializer, MyTokenObtainPairSerializer
+from .models import User, Post, Comment, History, Hashtag, Like,File
+from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer, LikeSerializer, MyTokenObtainPairSerializer, FileSerializer
 from .swagger_decorators import param_query_hint
 
 
@@ -56,11 +57,11 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     authentication_classes = (JWTAuthentication,)
-    
+
     def get_queryset(self):
         queryset = Post.objects.all()
         query = self.request.query_params.get('query', '')
-        if query is not '':
+        if not query:
             queryset = queryset.filter(title__icontains=query)
         return queryset
     
@@ -76,7 +77,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(manual_parameters=[param_query_hint])
     def list(self, request, *args, **kwargs):
         query = self.request.query_params.get('query', '')
-        if query is not '' and not request.user.is_anonymous:
+        if not query and not request.user.is_anonymous:
             History.objects.create(user=request.user, query=query)
         return super().list(request, *args, **kwargs)
     
@@ -86,7 +87,6 @@ class PostViewSet(viewsets.ModelViewSet):
         comments = post.comment_set.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
-
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -148,3 +148,11 @@ class LikeCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class FileCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = File.objects.all()
+    serializer_class = FileSerializer
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    parser_class = (FileUploadParser,)

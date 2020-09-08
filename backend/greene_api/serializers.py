@@ -3,7 +3,7 @@ from django.db.models import Sum
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import User, Post, Comment, Hashtag, History, Like
+from .models import User, Post, Comment, Hashtag, History, Like, File
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -114,3 +114,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['username'] = user.username
         return token
+
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = File
+        fields = '__all__'
