@@ -33,6 +33,15 @@ class Command(BaseCommand):
             model.objects.all().delete()
 
         self.stdout.write("Creating new data...")
+        # Create a superuser and posts
+        superuser = UserFactory(
+            email='greene@gmail.com',
+            username = 'greene',
+            password=factory.PostGenerationMethodCall('set_password', 'greene'),
+            is_staff=True,
+            is_superuser=True,
+        )
+
         # Create all the users
         people = []
         for _ in range(NUM_USERS):
@@ -71,15 +80,7 @@ class Command(BaseCommand):
             post = random.choice(posts)
             like = LikeFactory(user=user, post=post, number=random.randint(1, 5))
 
-        # Create a superuser and posts
-        superuser = UserFactory(
-            email='greene@gmail.com',
-            username = 'greene',
-            password=factory.PostGenerationMethodCall('set_password', 'greene'),
-            is_staff=True,
-            is_superuser=True,
-        )
-                
+        # Create superuser's posts
         for _ in range(5):
             post = PostFactory(user=superuser)
             posts.append(post)
