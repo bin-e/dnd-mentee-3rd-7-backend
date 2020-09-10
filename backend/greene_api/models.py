@@ -33,11 +33,10 @@ class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=150)
     content = models.TextField()
-    thumbnail = models.URLField(default='images/default_image.jpeg')
+    thumbnail = models.URLField(blank=True)
     hashtags = models.ManyToManyField('hashtag')
     date_created = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(default=timezone.now)
-
 
     def __str__(self):
         return f"{self.title}"

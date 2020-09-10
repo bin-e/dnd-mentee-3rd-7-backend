@@ -7,11 +7,12 @@ from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenViewBase, TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from drf_yasg.utils import swagger_auto_schema
 
 from .models import User, Post, Comment, History, Hashtag, Like,File
-from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer, LikeSerializer, MyTokenObtainPairSerializer, FileSerializer
+from .serializers import UserSerializer, PostSerializer, CommentSerializer, HistorySerializer, HashtagSerializer, LikeSerializer, MyTokenObtainPairSerializer, MyTokenBlacklistSerializer, FileSerializer
 from .swagger_decorators import param_query_hint
 
 
@@ -148,6 +149,21 @@ class LikeCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class MyTokenBlacklistViewView(TokenViewBase):
+    serializer_class = MyTokenBlacklistSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+        serializer.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class FileCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):

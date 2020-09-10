@@ -2,6 +2,7 @@ from django.db.models import Sum
 
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User, Post, Comment, Hashtag, History, Like, File
 
@@ -113,6 +114,19 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['username'] = user.username
         return token
+
+
+class MyTokenBlacklistSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        self.refresh_token = attrs['refresh']
+        RefreshToken(attrs['refresh'])
+        return data
+
+    def save(self, **kwargs):
+        RefreshToken(self.refresh_token).blacklist()
 
 
 class FileSerializer(serializers.ModelSerializer):

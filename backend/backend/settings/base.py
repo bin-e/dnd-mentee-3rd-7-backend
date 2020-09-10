@@ -31,7 +31,7 @@ INSTALLED_APPS = [
 
     # Third party modules
     'rest_framework',
-    
+    'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'django_seed',
     'corsheaders',
