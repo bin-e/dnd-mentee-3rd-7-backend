@@ -38,6 +38,9 @@ class Post(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        ordering = ('-id',)
+        
     def __str__(self):
         return f"{self.title}"
 

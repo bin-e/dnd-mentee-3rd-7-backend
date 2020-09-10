@@ -1,5 +1,6 @@
 import random 
 
+import html2text
 from django.db.models import Subquery
 from rest_framework import viewsets, generics, status, mixins
 from rest_framework.response import Response
@@ -75,12 +76,28 @@ class PostViewSet(viewsets.ModelViewSet):
             permission_classes = (IsAdminUser,)  
         return [permission() for permission in permission_classes]
     
+    def html_to_text(self, data):
+        for obj in data:
+            obj['content'] = html2text.html2text(obj.get('content'))
+
     @swagger_auto_schema(manual_parameters=[param_query_hint])
     def list(self, request, *args, **kwargs):
+        # Save a history with query
         query = self.request.query_params.get('query', '')
         if query and not request.user.is_anonymous:
             History.objects.create(user=request.user, query=query)
-        return super().list(request, *args, **kwargs)
+
+        # Return a response of Post's list
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            self.html_to_text(serializer.data)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        self.html_to_text(serializer.data)
+        return Response(serializer.data)
     
     @action(methods=['GET'], detail=True, url_path='comments')
     def comments(self, request, pk=None):
